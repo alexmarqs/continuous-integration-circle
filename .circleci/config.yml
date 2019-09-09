@@ -14,7 +14,30 @@ jobs:
       - run:
           name: build the jekyll site
           command: bundle exec jekyll build
+          
+  testlinks:
+    executor: ci-executor
+    steps:
+      - checkout
+
       - run:
-          name: notify build is finished
-          command: echo "The build is finished!"
+          name: build dependencies
+          command: bundle install
+
+      - run:
+          name: build the jekyll site
+          command: bundle exec jekyll build
+
+      - run:
+          name: run html proofer
+          command: bundle exec htmlproofer ./_site --check-html
+
+workflows:
+  version: 2.1
+  build_and_test:
+    jobs:
+      - build
+      - testlinks:
+          requires:
+            - build
 
